@@ -1,3 +1,5 @@
+import { ErrorMessages } from "./types"
+
 const info = (message: string, user: string | undefined, path: string) => {
   console.info(`[${user}] [${path}] ${message}`)
 }

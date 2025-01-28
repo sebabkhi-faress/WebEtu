@@ -9,6 +9,11 @@ export type ProfileDataType = {
   individuLieuNaissanceArabe: string
   individuEmail: string
 }
+export enum ErrorMessages {
+  FetchingError = "Error Fetching Data",
+  ServerError = "serverDown",
+  NetworkError = "connection",
+}
 
 export type ApiResponseType = {
   success: boolean

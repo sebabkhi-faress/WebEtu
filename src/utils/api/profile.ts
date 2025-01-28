@@ -1,7 +1,7 @@
 import logger from "@/utils/logger"
 import { longCache } from "@/utils/cache"
 import { fetchData, getCookieData } from "./helpers"
-import { ApiResponseType, ProfileDataType } from "@/utils/types"
+import { ApiResponseType, ProfileDataType, ErrorMessages } from "@/utils/types"
 
 export async function getProfileData() {
   const { token, user, uuid } = getCookieData()
@@ -51,8 +51,32 @@ export async function getProfileData() {
     response.success = true
     response.data = data
   } catch (error) {
+    let errorMessage = ErrorMessages.FetchingError
+    const typedError = error as {
+      response?: {
+        status: number
+      }
+      request?: {
+        timedOut: boolean
+      }
+    }
+
+    if (typedError.response) {
+      if (typedError.response.status === 500) {
+        errorMessage = ErrorMessages.ServerError
+      } else if (typedError.response.status === 404) {
+        errorMessage = ErrorMessages.FetchingError
+      }
+    } else if (typedError.request) {
+      if (typedError.request.timedOut) {
+        errorMessage = ErrorMessages.FetchingError
+      } else {
+        errorMessage = ErrorMessages.NetworkError
+      }
+    }
+
     response.success = false
-    response.error = "Error Fetching Profile Data"
+    response.error = errorMessage
 
     logger.error("Error", user, "getProfileData")
   } finally {
