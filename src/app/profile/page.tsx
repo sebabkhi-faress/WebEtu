@@ -109,10 +109,6 @@ const ProfilePage = async () => {
         ? ErrorMessages.ServerError
         : getProfileResponse.error
 
-    if (!navigator.onLine) {
-      const errorMessage =
-        getProfileResponse.error === ErrorMessages.NetworkError
-    }
     return <ErrorsComponent errorType={errorMessage} />
   }
 }
