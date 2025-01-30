@@ -2,6 +2,7 @@ import { createHash } from "crypto"
 import { decode } from "jsonwebtoken"
 import { cookies } from "next/headers"
 import axios from "axios"
+import { ErrorMessages } from "../types"
 
 function isValidUUID(uuid: string) {
   const uuidRegex =
@@ -45,4 +46,33 @@ export async function fetchData(link: string, token: string) {
     },
     timeout: Number(process.env.SERVER_TIMEOUT),
   })
+}
+export function handleError(error: any) {
+  let errorMessage = ErrorMessages.FetchingError
+  const typedError = error as {
+    response?: {
+      status: number
+    }
+    request?: {
+      timedOut: boolean
+    }
+  }
+
+  if (typedError.response) {
+    if (typedError.response.status === 500) {
+      errorMessage = ErrorMessages.ServerError
+    } else if (typedError.response.status === 404) {
+      errorMessage = ErrorMessages.FetchingError
+    }
+  } else if (typedError.request) {
+    if (typedError.request.timedOut) {
+      errorMessage = ErrorMessages.FetchingError
+    } else {
+      errorMessage = ErrorMessages.NetworkError
+    }
+  }
+
+  console.error("Error:", errorMessage)
+
+  return { success: false, error: errorMessage }
 }
