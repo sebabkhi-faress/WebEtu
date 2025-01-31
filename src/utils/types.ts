@@ -15,3 +15,13 @@ export type ApiResponseType = {
   data: ProfileDataType | undefined
   error: string | undefined
 }
+
+export type Module = {
+  id: number
+  name: string
+  exam: number
+  CC: {
+    TD?: number
+    TP?: number
+  }
+}
